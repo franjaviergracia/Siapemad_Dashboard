@@ -85,24 +85,23 @@ def filtrar_datos_consumo(df):
     df_unique = df.drop_duplicates(subset='fecha')
     df_unique['fecha'] = pd.to_datetime(df_unique['fecha'])
 
-    min_fecha = df['fecha'].min().date()
-    max_fecha = df['fecha'].max().date()
+    min_fecha = df_unique['fecha'].min().date()
+    max_fecha = df_unique['fecha'].max().date()
 
-    # Asegurarse de que el valor predeterminado esté dentro del rango permitido
-    default_fecha_inicio = min(max(st.session_state.get("fecha_inicio", min_fecha), min_fecha), max_fecha)
-    default_fecha_fin = min(max(st.session_state.get("fecha_fin", default_fecha_inicio), min_fecha), max_fecha)
-    
-    if "fecha_inicio" not in st.session_state:
-        st.session_state["fecha_inicio"] = default_fecha_inicio
-        st.session_state["hora_inicio"] = pd.Timestamp("00:00:00").time()
-        st.session_state["fecha_fin"] = default_fecha_fin
-        st.session_state["hora_fin"] = pd.Timestamp("23:59:59").time()
+    # Mensajes de depuración para verificar las fechas
+    print(f"min_fecha: {min_fecha}, max_fecha: {max_fecha}")
 
+    # Actualizar session_state con las fechas mínimas y máximas del archivo Excel
+    st.session_state["fecha_inicio"] = min_fecha
+    st.session_state["hora_inicio"] = pd.Timestamp("00:00:00").time()
+    st.session_state["fecha_fin"] = max_fecha
+    st.session_state["hora_fin"] = pd.Timestamp("23:59:59").time()
+
+    print(f"Set default fecha_inicio: {st.session_state['fecha_inicio']}, fecha_fin: {st.session_state['fecha_fin']}")
 
     fecha_inicio = st.sidebar.date_input("Fecha de inicio", value=st.session_state["fecha_inicio"], min_value=min_fecha, max_value=max_fecha)
     hora_inicio = st.sidebar.time_input("Hora de inicio", value=st.session_state["hora_inicio"])
     
-    print("\n",st.session_state["fecha_fin"],"\n")
     fecha_fin = st.sidebar.date_input("Fecha de fin", value=st.session_state["fecha_fin"], min_value=min_fecha, max_value=max_fecha)
     hora_fin = st.sidebar.time_input("Hora de fin", value=st.session_state["hora_fin"])
 
