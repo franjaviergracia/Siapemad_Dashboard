@@ -5,8 +5,10 @@ from PIL import Image
 from datasets import excel_files_actividad, excel_files_consumo, image_paths
 from actividad import Actividad
 
-if "data" not in st.session_state:
-    st.session_state.data = None
+if "data_actividad" not in st.session_state:
+    st.session_state.data_actividad = None
+if "data_consumo" not in st.session_state:
+    st.session_state.data_consumo = None
 
 st.set_page_config(page_title="Métricas de SIAPEMAD",
                    page_icon=":bar_chart:",
@@ -47,10 +49,7 @@ def encabezado():
     st.markdown("## :electric_plug: Tabla de consumo energético [W]")
 
 # Función para cargar datos desde un archivo Excel
-
-
 def cargar_datos_excel(file_path, sheet_name='Sheet1'):
-
     try:
         df = pd.read_excel(io=file_path, engine='openpyxl',
                            sheet_name=sheet_name, usecols=None, nrows=5000)
@@ -63,26 +62,43 @@ def cargar_datos_excel(file_path, sheet_name='Sheet1'):
 
 
 def cargar_datos(tipo_dataset, excel_files):
+    print("\tipo_dataset\n: ", tipo_dataset, "\n")
+    print("\nexcel_files\n: ", excel_files, "\n")
     print("Entro en la carga de datos")
     selected_key = st.sidebar.selectbox(
         f"Seleccione el dataset de {tipo_dataset}",  list(excel_files.keys()))
     file_path = excel_files[selected_key]
     st.session_state.selected_dataset = selected_key
 
-    # Es la primera carga por defecto, del dataset 1
-    if st.session_state.data is None:
+    if st.session_state.data_consumo is None and tipo_dataset == "consumo":
         df = cargar_datos_excel(excel_files["Consumo 1"])
-        st.session_state.data = df
+        print("\nDATOS CARGADOS DE CONSUMO\n")
+        st.session_state.data_consumo = df
         if df is not None:
             # Almacena el DataFrame en el estado de la sesión
             st.session_state[f"{tipo_dataset}_df"] = df
-            
+
+    # Es la primera carga por defecto, del dataset 1
+    if st.session_state.data_actividad is None and tipo_dataset == "actividad":
+        df = cargar_datos_excel(excel_files["Actividad 1"])
+        print("\nDATOS CARGADOS DE ACTIVIDAD\n")
+        st.session_state.data_actividad = df
+        if df is not None:
+            # Almacena el DataFrame en el estado de la sesión
+            st.session_state[f"{tipo_dataset}_df"] = df
+
+
+
     # Cargas solicitadas a través de las pulsaciones de los botones
     elif st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
         if st.session_state.selected_dataset not in st.session_state or st.session_state[f"{tipo_dataset}_df"] is None:
             print("Estoy en la parte de carga de carga nueva")
             df = cargar_datos_excel(file_path)
-            st.session_state.data = df
+            if tipo_dataset == "actividad":
+                st.session_state.data_actividad = df
+            elif tipo_dataset == "consumo":
+                st.session_state.data_consumo = df
+
             if df is not None:
                 # Almacena el DataFrame en el estado de la sesión
                 st.session_state[f"{tipo_dataset}_df"] = df
@@ -93,8 +109,8 @@ def cargar_datos(tipo_dataset, excel_files):
             df = st.session_state[f"{tipo_dataset}_df"]
             print(df)
     else: 
-        df = st.session_state.data
-           
+        # df = st.session_state.data
+        print("Entro else")
     return df
 
 
