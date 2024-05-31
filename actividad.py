@@ -16,6 +16,7 @@ class Actividad():
 
     #Elimina datos irrelevantes o faltantes
     def __procesar__(self):
+        print("Chavo este es el df", self.df)
         self.df["marquee-text"]=self.df["marquee-text"].astype(str)
         self.df=self.df.drop(columns=["ng-star-inserted src", "event-source-type", "Unnamed: 36"], errors='ignore')
         self.df=self.df.dropna(axis=1, how="all")
