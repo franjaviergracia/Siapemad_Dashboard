@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from PIL import Image
-from datasets import excel_files_actividad, excel_files_consumo, image_paths
+from consumos.datasets import excel_files_actividad, excel_files_consumo, image_paths
 from actividad import Actividad
 
 # Configuración inicial de la página
