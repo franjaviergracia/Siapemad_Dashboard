@@ -1,7 +1,7 @@
 # Lista de nombres de los archivos Excel disponibles
 
 # Determinar si estamos en entorno local o de deployment
-LOCAL = True  # Cambia a False cuando despliegues en GitHub
+LOCAL = False  # Cambia a False cuando despliegues en GitHub
 
 # Definir la ruta base dependiendo del entorno
 if LOCAL:
