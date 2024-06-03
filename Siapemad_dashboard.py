@@ -360,19 +360,21 @@ def mostrar_actividad(df_actividad):
 def main():
     # Lógica para ocultar los campos de texto y el botón después de iniciar sesión
     if st.session_state.login_complete:
-            encabezado()
-            df_consumo = cargar_datos("consumo", excel_files_consumo)
-            df_actividad = cargar_datos("actividad", excel_files_actividad)
+        encabezado()
+        df_consumo = cargar_datos("consumo", excel_files_consumo)
+        df_actividad = cargar_datos("actividad", excel_files_actividad)
 
-    if df_consumo is not None:
-        datos_filtrados_consumo, fecha_inicio_consumo, hora_inicio_consumo, fecha_fin_consumo, hora_fin_consumo = filtrar_datos("consumo", df_consumo)
-        columnas_de_interes_consumo = []  # Aquí deberías definir las columnas de interés para el consumo
-        top_kpis(columnas_de_interes_consumo, datos_filtrados_consumo, fecha_inicio_consumo, fecha_fin_consumo)
-        mostrar_consumos(datos_filtrados_consumo)
+        if df_consumo is not None:
+            datos_filtrados_consumo, fecha_inicio_consumo, hora_inicio_consumo, fecha_fin_consumo, hora_fin_consumo = filtrar_datos("consumo", df_consumo)
+            columnas_de_interes_consumo = []  # Aquí deberías definir las columnas de interés para el consumo
+            top_kpis(columnas_de_interes_consumo, datos_filtrados_consumo, fecha_inicio_consumo, fecha_fin_consumo)
+            mostrar_consumos(datos_filtrados_consumo)
 
-    if df_actividad is not None:
-        datos_filtrados_actividad, fecha_inicio_actividad, fecha_fin_actividad = filtrar_datos("actividad", df_actividad)
-        mostrar_actividad(datos_filtrados_actividad)
+        if df_actividad is not None:
+            datos_filtrados_actividad, fecha_inicio_actividad, fecha_fin_actividad = filtrar_datos("actividad", df_actividad)
+            mostrar_actividad(datos_filtrados_actividad)
+    else:
+        login()
 
 
 if __name__ == "__main__":
