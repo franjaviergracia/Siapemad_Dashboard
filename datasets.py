@@ -1,11 +1,11 @@
 # Lista de nombres de los archivos Excel disponibles
 
 # Determinar si estamos en entorno local o de deployment
-LOCAL = False  # Cambia a False cuando despliegues en GitHub
+LOCAL = True  # Cambia a False cuando despliegues en GitHub
 
 # Definir la ruta base dependiendo del entorno
 if LOCAL:
-    base_url = "C:/Users/34688/Documents/CARPETAS DE TRABAJO DE JAVI/python_ws/Siapemad_Dashboard/"
+    base_url = "C:/Users/CTM40/Desktop/SIAPEMAD/Siapemad_Dashboard/"
 else:
     base_url = "https://raw.githubusercontent.com/franjaviergracia/Siapemad_Dashboard/main/"
 
