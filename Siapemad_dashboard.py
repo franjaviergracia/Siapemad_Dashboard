@@ -126,59 +126,56 @@ def cargar_datos(tipo_dataset, excel_files):
 
     return st.session_state.data_actividad if tipo_dataset == "actividad" else st.session_state.data_consumo
 
-def filtrar_datos_consumo(df):
-    """Filtra los datos de consumo según el rango de fechas y horas seleccionado."""
-    columnas_totales = [
-        'Luz Pasillo', 'Luz Cocina', 'Luz Salon', 'Luz Bano', 'Luz Dormitorio',
-        'Luz Entrada', 'Enchufe Salon', 'Persiana Salon', 'Puerta', 'Sensor Movimiento Salon',
-        'Sensor Movimiento Pasillo', 'Enchufe Cocina', 'Persiana Salida', 'Boton', 'Temperatura',
-        'Temperatura Salon', 'Temperatura Pasillo', 'Zwave', 'Porterillo', 'SmartImplant',
-        'Cuarto Lavadora', 'Persiana Dormitorio', 'Descolgar', 'Luminosidad Salon', 'Luminosidad Pasillo'
-    ]
-    
-    columnas_de_interes = [col for col in columnas_totales if col in df.columns]
+def filtrar_datos(tipo_datos,df):
+    """Filtra los datos según el rango de fechas seleccionado."""
+    df_unique = df.drop_duplicates(subset='fecha' if tipo_datos == 'consumo' else 'event-time')
+    date_column = 'fecha' if tipo_datos == 'consumo' else 'event-time'
+    df_unique[date_column] = pd.to_datetime(df_unique[date_column])
 
-    df_unique = df.drop_duplicates(subset='fecha')
-    df_unique['fecha'] = pd.to_datetime(df_unique['fecha'])
-
-    min_fecha = df_unique['fecha'].min().date()
-    max_fecha = df_unique['fecha'].max().date()
-
-    # Mensajes de depuración para verificar las fechas
-    print(f"min_fecha: {min_fecha}, max_fecha: {max_fecha}")
+    min_fecha = df_unique[date_column].min().date()
+    max_fecha = df_unique[date_column].max().date()
 
     # Actualizar session_state con las fechas mínimas y máximas del archivo Excel
-    st.session_state["fecha_inicio"] = min_fecha
-    st.session_state["hora_inicio"] = pd.Timestamp("00:00:00").time()
-    st.session_state["fecha_fin"] = max_fecha
-    st.session_state["hora_fin"] = pd.Timestamp("23:59:59").time()
+    if tipo_datos == "consumo":
+        st.session_state[f"fecha_inicio_{tipo_datos}"] = st.session_state.get(f"fecha_inicio_{tipo_datos}", min_fecha)
+        st.session_state[f"fecha_fin_{tipo_datos}"] = st.session_state.get(f"fecha_fin_{tipo_datos}", max_fecha)
+        st.session_state[f"hora_inicio_{tipo_datos}"] = st.session_state.get(f"hora_inicio_{tipo_datos}", pd.Timestamp("00:00:00").time())
+        st.session_state[f"hora_fin_{tipo_datos}"] = st.session_state.get(f"hora_fin_{tipo_datos}", pd.Timestamp("23:59:59").time())
+    elif tipo_datos == "actividad":
+        st.session_state[f"fecha_inicio_{tipo_datos}"] = st.session_state.get(f"fecha_inicio_{tipo_datos}", min_fecha)
+        st.session_state[f"fecha_fin_{tipo_datos}"] = st.session_state.get(f"fecha_fin_{tipo_datos}", max_fecha)
 
-    print(f"Set default fecha_inicio: {st.session_state['fecha_inicio']}, fecha_fin: {st.session_state['fecha_fin']}")
+    if tipo_datos == 'consumo':
+        fecha_inicio_key = "fecha_inicio_consumo"
+        fecha_fin_key = "fecha_fin_consumo"
+    else:
+        fecha_inicio_key = "fecha_inicio_actividad"
+        fecha_fin_key = "fecha_fin_actividad"
 
-    fecha_inicio = st.sidebar.date_input("Fecha de inicio", value=st.session_state["fecha_inicio"], min_value=min_fecha, max_value=max_fecha)
-    hora_inicio = st.sidebar.time_input("Hora de inicio", value=st.session_state["hora_inicio"])
-    
-    fecha_fin = st.sidebar.date_input("Fecha de fin", value=st.session_state["fecha_fin"], min_value=min_fecha, max_value=max_fecha)
-    hora_fin = st.sidebar.time_input("Hora de fin", value=st.session_state["hora_fin"])
+    fecha_inicio = st.sidebar.date_input(f"Fecha inicio {tipo_datos.capitalize()}", value=st.session_state[f"fecha_inicio_{tipo_datos}"], min_value=min_fecha, max_value=max_fecha, key=fecha_inicio_key)
+    fecha_fin = st.sidebar.date_input(f"Fecha fin {tipo_datos.capitalize()}", value=st.session_state[f"fecha_fin_{tipo_datos}"], min_value=min_fecha, max_value=max_fecha, key=fecha_fin_key)
 
-    aplicar_filtro = st.sidebar.button("Aplicar Filtro")
-    deshacer_filtro = st.sidebar.button("Deshacer Filtro")
+    aplicar_filtro_key = f"aplicar_filtro_{tipo_datos}"
+    deshacer_filtro_key = f"deshacer_filtro_{tipo_datos}"
+
+    aplicar_filtro = st.sidebar.button("Aplicar Filtro", key=aplicar_filtro_key)
+    deshacer_filtro = st.sidebar.button("Deshacer Filtro", key=deshacer_filtro_key)
 
     datos_filtrados = df_unique
     if aplicar_filtro:
-        fecha_hora_inicio = pd.Timestamp(f"{fecha_inicio} {hora_inicio}")
-        fecha_hora_fin = pd.Timestamp(f"{fecha_fin} {hora_fin}")
-
-        if fecha_hora_inicio <= fecha_hora_fin:
-            datos_filtrados = df_unique[(df_unique['fecha'] >= fecha_hora_inicio) & (df_unique['fecha'] <= fecha_hora_fin)]
-            st.dataframe(datos_filtrados, use_container_width=True)
+        datos_filtrados = df_unique[(df_unique[date_column].dt.date >= fecha_inicio) & (df_unique[date_column].dt.date <= fecha_fin)]
+        st.dataframe(datos_filtrados, use_container_width=True)
     elif deshacer_filtro:
         st.dataframe(df_unique, use_container_width=True)
     else:
         st.dataframe(df_unique, use_container_width=True)
 
-
-    return columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin
+    if tipo_datos == "consumo":
+        hora_inicio = st.sidebar.time_input("Hora de inicio", value=st.session_state[f"hora_inicio_{tipo_datos}"])
+        hora_fin = st.sidebar.time_input("Hora de fin", value=st.session_state[f"hora_fin_{tipo_datos}"])
+        return datos_filtrados, fecha_inicio, hora_inicio, fecha_fin, hora_fin
+    elif tipo_datos == "actividad":
+        return datos_filtrados, fecha_inicio, fecha_fin
 
 def top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin):
     """Muestra los principales KPIs energéticos."""
@@ -357,24 +354,20 @@ def mostrar_actividad(df_actividad):
 def main():
     # if login():
     # Aquí colocas el código principal de tu aplicación después del inicio de sesión exitoso
-    st.title("¡Bienvenido a la plataforma!")
-    st.write("Tu contenido principal va aquí.")
     encabezado()
 
     df_consumo = cargar_datos("consumo", excel_files_consumo)
     df_actividad = cargar_datos("actividad", excel_files_actividad)
 
     if df_consumo is not None:
-        columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin = filtrar_datos_consumo(df_consumo)
-        top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin)
-        mostrar_consumos(datos_filtrados)
+        datos_filtrados_consumo, fecha_inicio_consumo, hora_inicio_consumo, fecha_fin_consumo, hora_fin_consumo = filtrar_datos("consumo", df_consumo)
+        columnas_de_interes_consumo = []  # Aquí deberías definir las columnas de interés para el consumo
+        top_kpis(columnas_de_interes_consumo, datos_filtrados_consumo, fecha_inicio_consumo, fecha_fin_consumo)
+        mostrar_consumos(datos_filtrados_consumo)
 
     if df_actividad is not None:
-        mostrar_actividad(df_actividad)
-
-    # else:
-    #     st.warning("Por favor, inicia sesión para acceder a la plataforma.")
-
+        datos_filtrados_actividad, fecha_inicio_actividad, fecha_fin_actividad = filtrar_datos("actividad", df_actividad)
+        mostrar_actividad(datos_filtrados_actividad)
 
 
 if __name__ == "__main__":
