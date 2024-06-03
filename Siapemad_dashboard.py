@@ -5,10 +5,14 @@ from PIL import Image, ImageOps
 from datasets import excel_files_actividad, excel_files_consumo, image_paths
 from actividad import Actividad
 
+
+# Store the initial value of widgets in session state
+if "login_complete" not in st.session_state:
+    st.session_state.login_complete = False
 # Diccionario para almacenar nombres de usuario y contraseñas
 usuarios = {
-    "usuario1": "contraseña1",
-    "usuario2": "contraseña2",
+    "user1": "1234",
+    "user2": "1234",
     # Agrega más usuarios si es necesario
 }
 
@@ -39,14 +43,17 @@ def login():
     st.write("Por favor, introduce tu nombre de usuario y contraseña.")
 
     # Entradas de texto para usuario y contraseña
-    username = st.text_input("Usuario")
-    password = st.text_input("Contraseña", type="password")
-
+    username = st.text_input("Usuario", key="username_input")
+    password = st.text_input("Contraseña", type="password", key="password_input")
+    buton = st.button("Iniciar sesión", key="login_button")
     # Botón para iniciar sesión
-    if st.button("Iniciar sesión"):
+    if buton:
         if username in usuarios:
             if usuarios[username] == password:
                 st.success(f"Bienvenido, {username}!")
+                # Actualizar el estado de la sesión para indicar que el inicio de sesión está completo
+                st.session_state.login_complete = True
+                st.experimental_rerun()  # Refrescar la página para ocultar los campos de texto
                 return True
             else:
                 st.error("Contraseña incorrecta. Inténtalo de nuevo.")
@@ -354,20 +361,22 @@ def mostrar_actividad(df_actividad):
 
 
 def main():
-    # if login():
-        encabezado()
-        df_consumo = cargar_datos("consumo", excel_files_consumo)
-        df_actividad = cargar_datos("actividad", excel_files_actividad)
+    # Lógica para ocultar los campos de texto y el botón después de iniciar sesión
+    if st.session_state.login_complete:
+            encabezado()
+            df_consumo = cargar_datos("consumo", excel_files_consumo)
+            df_actividad = cargar_datos("actividad", excel_files_actividad)
 
-        if df_consumo is not None:
-            columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin = filtrar_datos_consumo(df_consumo)
-            top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin)
-            mostrar_consumos(datos_filtrados)
+            if df_consumo is not None:
+                columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin = filtrar_datos_consumo(df_consumo)
+                top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin)
+                mostrar_consumos(datos_filtrados)
 
-        if df_actividad is not None:
-            mostrar_actividad(df_actividad)
-    # else:
-    #     st.warning("Por favor, inicia sesión para acceder a la plataforma.")
+            if df_actividad is not None:
+                mostrar_actividad(df_actividad)
 
+    else:
+       login()
+       
 if __name__ == "__main__":
     main()
