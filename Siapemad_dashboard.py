@@ -12,7 +12,6 @@ usuarios = {
     # Agrega más usuarios si es necesario
 }
 
-
 # Variables Globales graficos
 FONT_SIZE = 20
 TITLE_SIZE = 23
@@ -26,29 +25,6 @@ TITLEY_SIZE = 21
 st.set_page_config(page_title="Métricas de SIAPEMAD",
                    page_icon=":bar_chart:",
                    layout="wide")
-
-def login():
-    """Función para el inicio de sesión."""
-    st.title("Inicio de sesión")
-    st.write("Por favor, introduce tu nombre de usuario y contraseña.")
-
-    # Entradas de texto para usuario y contraseña
-    username = st.text_input("Usuario")
-    password = st.text_input("Contraseña", type="password")
-
-    # Botón para iniciar sesión
-    if st.button("Iniciar sesión"):
-        if username in usuarios:
-            if usuarios[username] == password:
-                st.success(f"Bienvenido, {username}!")
-                return True
-            else:
-                st.error("Contraseña incorrecta. Inténtalo de nuevo.")
-        else:
-            st.error("Usuario no encontrado.")
-    
-    return False
-
 
 # Inicialización del estado de la sesión
 if "data_actividad" not in st.session_state:
@@ -355,10 +331,6 @@ def mostrar_actividad(df_actividad):
 
 
 def main():
-    # if login():
-    # Aquí colocas el código principal de tu aplicación después del inicio de sesión exitoso
-    st.title("¡Bienvenido a la plataforma!")
-    st.write("Tu contenido principal va aquí.")
     encabezado()
 
     df_consumo = cargar_datos("consumo", excel_files_consumo)
@@ -371,11 +343,6 @@ def main():
 
     if df_actividad is not None:
         mostrar_actividad(df_actividad)
-
-    # else:
-    #     st.warning("Por favor, inicia sesión para acceder a la plataforma.")
-
-
 
 if __name__ == "__main__":
     main()
