@@ -15,8 +15,8 @@ if "login_complete" not in st.session_state:
 load_dotenv()
 
 # Acceder a las variables de entorno
-user1 = os.getenv("USER1")
-pass1 = os.getenv("PASS1")
+user1 = os.environ("USER1")
+pass1 = os.environ("PASS1")
 
 usuarios = {
     user1: pass1
