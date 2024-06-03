@@ -12,7 +12,6 @@ usuarios = {
     # Agrega más usuarios si es necesario
 }
 
-
 # Variables Globales graficos
 FONT_SIZE = 20
 TITLE_SIZE = 23
@@ -26,6 +25,13 @@ TITLEY_SIZE = 21
 st.set_page_config(page_title="Métricas de SIAPEMAD",
                    page_icon=":bar_chart:",
                    layout="wide")
+
+# Inicialización del estado de la sesión
+if "data_actividad" not in st.session_state:
+    st.session_state.data_actividad = None
+if "data_consumo" not in st.session_state:
+    st.session_state.data_consumo = None
+
 
 def login():
     """Función para el inicio de sesión."""
@@ -48,13 +54,6 @@ def login():
             st.error("Usuario no encontrado.")
     
     return False
-
-
-# Inicialización del estado de la sesión
-if "data_actividad" not in st.session_state:
-    st.session_state.data_actividad = None
-if "data_consumo" not in st.session_state:
-    st.session_state.data_consumo = None
 
 def encabezado():
     """Muestra el encabezado y las imágenes en la página principal."""
