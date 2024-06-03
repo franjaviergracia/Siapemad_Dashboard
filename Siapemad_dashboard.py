@@ -354,7 +354,7 @@ def mostrar_actividad(df_actividad):
 
 
 def main():
-    if login():
+    # if login():
         encabezado()
         df_consumo = cargar_datos("consumo", excel_files_consumo)
         df_actividad = cargar_datos("actividad", excel_files_actividad)
@@ -366,8 +366,8 @@ def main():
 
         if df_actividad is not None:
             mostrar_actividad(df_actividad)
-    else:
-        st.warning("Por favor, inicia sesión para acceder a la plataforma.")
+    # else:
+    #     st.warning("Por favor, inicia sesión para acceder a la plataforma.")
 
 if __name__ == "__main__":
     main()
