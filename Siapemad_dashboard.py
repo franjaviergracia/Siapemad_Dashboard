@@ -4,15 +4,25 @@ import streamlit as st
 from PIL import Image, ImageOps
 from datasets import excel_files_actividad, excel_files_consumo, image_paths
 from actividad import Actividad
-
+from dotenv import load_dotenv
+import os
 
 # Store the initial value of widgets in session state
 if "login_complete" not in st.session_state:
     st.session_state.login_complete = False
-# Diccionario para almacenar nombres de usuario y contraseñas
+
+# Cargar variables de entorno desde el archivo .env
+load_dotenv()
+
+# Acceder a las variables de entorno
+user1 = os.getenv("USER1")
+pass1 = os.getenv("PASS1")
+user2 = os.getenv("USER2")
+pass2 = os.getenv("PASS2")
+
 usuarios = {
-    "user1": "1234",
-    "user2": "1234",
+    user1: pass1,
+    user2: pass2,
     # Agrega más usuarios si es necesario
 }
 
