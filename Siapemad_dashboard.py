@@ -24,10 +24,10 @@ def encabezado():
     for col, img_path in zip(columns, image_paths):
         try:
             img = Image.open(img_path)
-            width_percent = (uniform_width / float(img.size[0]))
-            new_height = int((float(img.size[1]) * float(width_percent)))
-            img = img.resize((uniform_width, new_height))
-            col.image(img, use_column_width=True, caption=img_path)
+            # width_percent = (uniform_width / float(img.size[0]))
+            # new_height = int((float(img.size[1]) * float(width_percent)))
+            # img = img.resize((uniform_width, new_height))
+            col.image(img)# , use_column_width=True)
         except FileNotFoundError:
             st.error(f"No se encontró la imagen en la ruta: {img_path}")
         except Exception as e:
