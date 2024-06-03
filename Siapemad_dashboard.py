@@ -39,7 +39,7 @@ def encabezado():
 def cargar_datos_excel(file_path, sheet_name='Sheet1'):
     """Carga datos desde un archivo Excel."""
     try:
-        df = pd.read_excel(io=file_path, engine='xlrd', sheet_name=sheet_name, usecols=None, nrows=5000)
+        df = pd.read_excel(io=file_path, engine='openpyxl', sheet_name=sheet_name, usecols=None, nrows=5000)
         return df
     except FileNotFoundError:
         st.error(f"No se encontró el archivo en la ruta: {file_path}")
