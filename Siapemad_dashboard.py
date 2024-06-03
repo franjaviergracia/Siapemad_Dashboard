@@ -1,14 +1,54 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from PIL import Image
-from consumos.datasets import excel_files_actividad, excel_files_consumo, image_paths
+from PIL import Image, ImageOps
+from datasets import excel_files_actividad, excel_files_consumo, image_paths
 from actividad import Actividad
+
+# Diccionario para almacenar nombres de usuario y contraseñas
+usuarios = {
+    "usuario1": "contraseña1",
+    "usuario2": "contraseña2",
+    # Agrega más usuarios si es necesario
+}
+
+
+# Variables Globales graficos
+FONT_SIZE = 20
+TITLE_SIZE = 23
+XAXIS_SIZE = 18
+YAXIS_SIZE = 18
+LEGEND_SIZE = 17
+TITLEX_SIZE = 21
+TITLEY_SIZE = 21
 
 # Configuración inicial de la página
 st.set_page_config(page_title="Métricas de SIAPEMAD",
                    page_icon=":bar_chart:",
                    layout="wide")
+
+def login():
+    """Función para el inicio de sesión."""
+    st.title("Inicio de sesión")
+    st.write("Por favor, introduce tu nombre de usuario y contraseña.")
+
+    # Entradas de texto para usuario y contraseña
+    username = st.text_input("Usuario")
+    password = st.text_input("Contraseña", type="password")
+
+    # Botón para iniciar sesión
+    if st.button("Iniciar sesión"):
+        if username in usuarios:
+            if usuarios[username] == password:
+                st.success(f"Bienvenido, {username}!")
+                return True
+            else:
+                st.error("Contraseña incorrecta. Inténtalo de nuevo.")
+        else:
+            st.error("Usuario no encontrado.")
+    
+    return False
+
 
 # Inicialización del estado de la sesión
 if "data_actividad" not in st.session_state:
@@ -18,16 +58,32 @@ if "data_consumo" not in st.session_state:
 
 def encabezado():
     """Muestra el encabezado y las imágenes en la página principal."""
-    uniform_width = 300  # Cambia a las dimensiones que prefieras
-    columns = st.columns(len(image_paths))
+    uniform_width = 300  # Anchura uniforme deseada
 
-    for col, img_path in zip(columns, image_paths):
+    # Calcular la altura máxima de las imágenes redimensionadas
+    heights = []
+    for img_path in image_paths:
+        img = Image.open(img_path).convert("RGBA")  # Asegurarse de que la imagen tenga un canal alfa
+        width_percent = (uniform_width / float(img.size[0]))
+        new_height = int((float(img.size[1]) * float(width_percent)))
+        heights.append(new_height)
+
+    max_height = max(heights)
+
+    # Redimensionar y añadir márgenes a las imágenes
+    columns = st.columns(len(image_paths))
+    for col, img_path, height in zip(columns, image_paths, heights):
         try:
-            img = Image.open(img_path)
-            # width_percent = (uniform_width / float(img.size[0]))
-            # new_height = int((float(img.size[1]) * float(width_percent)))
-            # img = img.resize((uniform_width, new_height))
-            col.image(img)# , use_column_width=True)
+            img = Image.open(img_path).convert("RGBA")  # Asegurarse de que la imagen tenga un canal alfa
+            width_percent = (uniform_width / float(img.size[0]))
+            new_height = int((float(img.size[1]) * float(width_percent)))
+            img = img.resize((uniform_width, new_height))
+            
+            # Añadir márgenes verticales con transparencia
+            vertical_padding = (max_height - new_height) // 2
+            img_with_padding = ImageOps.expand(img, border=(0, vertical_padding, 0, vertical_padding), fill=(0, 0, 0, 0))
+            
+            col.image(img_with_padding, use_column_width=True)
         except FileNotFoundError:
             st.error(f"No se encontró la imagen en la ruta: {img_path}")
         except Exception as e:
@@ -121,9 +177,8 @@ def filtrar_datos_consumo(df):
     else:
         st.dataframe(df_unique, use_container_width=True)
 
+
     return columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin
-
-
 
 def top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin):
     """Muestra los principales KPIs energéticos."""
@@ -171,6 +226,15 @@ def mostrar_consumos(datos_filtrados):
         color_discrete_sequence=["#0083B8"] * len(df_bar),
         template="plotly_white"
     )
+
+    # En la función mostrar_consumos
+    fig_consumos.update_layout(
+    font=dict(size=FONT_SIZE),  # Tamaño de letra para el texto general del gráfico
+    title=dict(font=dict(size=TITLE_SIZE)),  # Tamaño de letra para el título del gráfico
+    xaxis=dict(title_font=dict(size=TITLEX_SIZE), tickfont=dict(size=XAXIS_SIZE)),  # Tamaño de letra para las etiquetas del eje x
+    yaxis=dict(title_font=dict(size=TITLEY_SIZE), tickfont=dict(size=YAXIS_SIZE))   # Tamaño de letra para las etiquetas del eje y
+    )
+
     df_interpolado = datos_filtrados.interpolate(inplace=False)
 
     datos_filtrados['fecha'] = pd.to_datetime(datos_filtrados['fecha'])
@@ -190,6 +254,23 @@ def mostrar_consumos(datos_filtrados):
         labels={'variable': 'Sensores', 'value': 'Valores'}
     )
 
+    fig_evolucion_consumo.update_layout(
+    font=dict(size=FONT_SIZE),  # Tamaño de letra para el texto general del gráfico
+    title=dict(font=dict(size=TITLE_SIZE)),  # Tamaño de letra para el título del gráfico
+    xaxis=dict(title_font=dict(size=TITLEX_SIZE), tickfont=dict(size=XAXIS_SIZE)),  # Tamaño de letra para las etiquetas del eje x
+    yaxis=dict(title_font=dict(size=TITLEY_SIZE), tickfont=dict(size=YAXIS_SIZE)),
+    legend=dict(font=dict(size=LEGEND_SIZE))  # Tamaño de letra para la leyenda
+    )
+
+    # Aplicar escala logarítmica al eje y
+    fig_bigotes.update_layout(
+    font=dict(size=FONT_SIZE),  # Tamaño de letra para el texto general del gráfico
+    title=dict(font=dict(size=TITLE_SIZE)),  # Tamaño de letra para el título del gráfico
+    xaxis=dict(title_font=dict(size=TITLEX_SIZE), tickfont=dict(size=XAXIS_SIZE)),  # Tamaño de letra para las etiquetas del eje x
+    yaxis=dict(title_font=dict(size=TITLEY_SIZE), tickfont=dict(size=YAXIS_SIZE), type='log'),
+    legend=dict(font=dict(size=LEGEND_SIZE))  # Tamaño de letra para la leyenda
+    )
+    
     left_colum, right_column = st.columns(2)
     left_colum.plotly_chart(fig_consumos, use_container_width=True)
     right_column.plotly_chart(fig_evolucion_consumo, use_container_width=True)
@@ -222,8 +303,11 @@ def mostrar_actividad(df_actividad):
     st.markdown("---")
     st.markdown("##")
     st.title(":walking: Behaviour Patterns")
-
     activity_proc = Actividad(df_actividad).datos()
+
+    # Definir el orden de las categorías
+    categoria_orden = ['alto', 'medio', 'bajo']
+    activity_proc['clasificacion'] = pd.Categorical(activity_proc['clasificacion'], categories=categoria_orden, ordered=True)
 
     total_count = activity_proc['clasificacion'].count()
     bajo_count = activity_proc['clasificacion'].eq('bajo').sum()
@@ -238,20 +322,43 @@ def mostrar_actividad(df_actividad):
                 'Porcentaje': [bajo_percent, medio_percent, alto_percent]}
     df_pie = pd.DataFrame(data_pie)
 
+    # Crear el gráfico de barras asegurando el orden
     fig_barras = px.bar(activity_proc, x=activity_proc.index, y='clasificacion',
                         title='Clasificación de actividad por fecha',
-                        labels={'clasificacion': 'Clasificación', 'index': 'Fecha'})
+                        labels={'clasificacion': 'Clasificación', 'index': 'Fecha'},
+                        category_orders={'clasificacion': categoria_orden})
 
     fig_pie = px.pie(df_pie, values='Porcentaje', names='Clasificación',
                      title='Porcentaje de clasificación de actividad',
                      labels={'Porcentaje': 'Porcentaje', 'Clasificación': 'Clasificación'},
                      hole=0.4)
+    
+    # Aumentar el tamaño de letra en los gráficos
+    fig_barras.update_layout(
+    font=dict(size=FONT_SIZE),  # Tamaño de letra para el texto general del gráfico
+    title=dict(font=dict(size=TITLE_SIZE)),  # Tamaño de letra para el título del gráfico
+    xaxis=dict(title_font=dict(size=TITLEX_SIZE), tickfont=dict(size=XAXIS_SIZE)),  # Tamaño de letra para las etiquetas del eje x
+    yaxis=dict(title_font=dict(size=TITLEY_SIZE), tickfont=dict(size=YAXIS_SIZE))   # Tamaño de letra para las etiquetas del eje y
+    )
+
+    fig_pie.update_layout(
+    font=dict(size=FONT_SIZE),  # Tamaño de letra para el texto general del gráfico
+    title=dict(font=dict(size=TITLE_SIZE)),  # Tamaño de letra para el título del gráfico
+    xaxis=dict(title_font=dict(size=TITLEX_SIZE), tickfont=dict(size=XAXIS_SIZE)),  # Tamaño de letra para las etiquetas del eje x
+    yaxis=dict(title_font=dict(size=TITLEY_SIZE), tickfont=dict(size=YAXIS_SIZE)),   # Tamaño de letra para las etiquetas del eje y
+    legend=dict(font=dict(size=LEGEND_SIZE))  # Tamaño de letra para la leyenda
+    )
 
     left_colum2, right_column2 = st.columns(2)
     left_colum2.plotly_chart(fig_barras, use_container_width=True)
     right_column2.plotly_chart(fig_pie, use_container_width=True)
 
+
 def main():
+    # if login():
+    # Aquí colocas el código principal de tu aplicación después del inicio de sesión exitoso
+    st.title("¡Bienvenido a la plataforma!")
+    st.write("Tu contenido principal va aquí.")
     encabezado()
 
     df_consumo = cargar_datos("consumo", excel_files_consumo)
@@ -264,6 +371,11 @@ def main():
 
     if df_actividad is not None:
         mostrar_actividad(df_actividad)
+
+    # else:
+    #     st.warning("Por favor, inicia sesión para acceder a la plataforma.")
+
+
 
 if __name__ == "__main__":
     main()
