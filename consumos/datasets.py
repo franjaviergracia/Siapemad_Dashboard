@@ -37,8 +37,8 @@ excel_files_actividad = {
 
 # Lista de rutas de las imágenes
 image_paths = [
-    "consumos/Logo_1.png",
-    "consumos/Logo_2.png",
-    "consumos/Logo_3.png",
-    "consumos/Logo_4.png"
+    "logotipos/Logo_1.png",
+    "logotipos/Logo_2.png",
+    "logotipos/Logo_3.png",
+    "logotipos/Logo_4.png"
 ]
