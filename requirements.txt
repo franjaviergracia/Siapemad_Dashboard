@@ -3,4 +3,4 @@ plotly
 streamlit
 pillow
 openpyxl
-dotenv
+python-dotenv
