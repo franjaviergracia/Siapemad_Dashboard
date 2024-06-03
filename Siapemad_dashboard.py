@@ -32,6 +32,29 @@ if "data_actividad" not in st.session_state:
 if "data_consumo" not in st.session_state:
     st.session_state.data_consumo = None
 
+
+def login():
+    """Función para el inicio de sesión."""
+    st.title("Inicio de sesión")
+    st.write("Por favor, introduce tu nombre de usuario y contraseña.")
+
+    # Entradas de texto para usuario y contraseña
+    username = st.text_input("Usuario")
+    password = st.text_input("Contraseña", type="password")
+
+    # Botón para iniciar sesión
+    if st.button("Iniciar sesión"):
+        if username in usuarios:
+            if usuarios[username] == password:
+                st.success(f"Bienvenido, {username}!")
+                return True
+            else:
+                st.error("Contraseña incorrecta. Inténtalo de nuevo.")
+        else:
+            st.error("Usuario no encontrado.")
+    
+    return False
+
 def encabezado():
     """Muestra el encabezado y las imágenes en la página principal."""
     uniform_width = 300  # Anchura uniforme deseada
@@ -331,18 +354,20 @@ def mostrar_actividad(df_actividad):
 
 
 def main():
-    encabezado()
+    if login():
+        encabezado()
+        df_consumo = cargar_datos("consumo", excel_files_consumo)
+        df_actividad = cargar_datos("actividad", excel_files_actividad)
 
-    df_consumo = cargar_datos("consumo", excel_files_consumo)
-    df_actividad = cargar_datos("actividad", excel_files_actividad)
+        if df_consumo is not None:
+            columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin = filtrar_datos_consumo(df_consumo)
+            top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin)
+            mostrar_consumos(datos_filtrados)
 
-    if df_consumo is not None:
-        columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin = filtrar_datos_consumo(df_consumo)
-        top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin)
-        mostrar_consumos(datos_filtrados)
-
-    if df_actividad is not None:
-        mostrar_actividad(df_actividad)
+        if df_actividad is not None:
+            mostrar_actividad(df_actividad)
+    else:
+        st.warning("Por favor, inicia sesión para acceder a la plataforma.")
 
 if __name__ == "__main__":
     main()
