@@ -17,12 +17,9 @@ load_dotenv()
 # Acceder a las variables de entorno
 user1 = os.getenv("USER1")
 pass1 = os.getenv("PASS1")
-user2 = os.getenv("USER2")
-pass2 = os.getenv("PASS2")
 
 usuarios = {
-    user1: pass1,
-    user2: pass2,
+    user1: pass1
     # Agrega más usuarios si es necesario
 }
 
