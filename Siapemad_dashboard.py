@@ -27,7 +27,7 @@ def encabezado():
             width_percent = (uniform_width / float(img.size[0]))
             new_height = int((float(img.size[1]) * float(width_percent)))
             img = img.resize((uniform_width, new_height))
-            col.image(img, use_column_width=True)
+            col.image(img, use_column_width=True, caption=img_path)
         except FileNotFoundError:
             st.error(f"No se encontró la imagen en la ruta: {img_path}")
         except Exception as e:
