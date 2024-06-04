@@ -1,3 +1,0 @@
-env:
-  USER1: ${{ secrets.USER1 }}
-  PASS1: ${{ secrets.PASS1 }}
