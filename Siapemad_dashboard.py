@@ -371,9 +371,11 @@ def main():
     # Verificar la obtención de los secretos
     if user1 and pass1:
         st.success("Secretos obtenidos correctamente.")
+        st.success(f"Secretos: {user1}:{pass1}")
     else:
         st.error("No se pudieron obtener los secretos.")
-        
+        st.error(f"Secretos: {user1}:{pass1}")
+
     if st.session_state.login_complete:
         encabezado()
         df_consumo = cargar_datos("consumo", excel_files_consumo)
