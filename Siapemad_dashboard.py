@@ -4,19 +4,14 @@ import streamlit as st
 from PIL import Image, ImageOps
 from datasets import excel_files_actividad, excel_files_consumo, image_paths
 from actividad import Actividad
-import os
+
 
 # Store the initial value of widgets in session state
 if "login_complete" not in st.session_state:
     st.session_state.login_complete = False
 
-# Acceder a las variables de entorno
-user1 = os.getenv("USER1")
-pass1 = os.getenv("PASS1")
-# Usar la variable secreta en tu lógica
-print(f"My user is: {user1}")
-print(f"My password is: {pass1}")
-
+user1 = st.secrets["secrets"]["user1"]
+pass1 = st.secrets["secrets"]["pass1"]
 usuarios = {
     user1: pass1
     # Agrega más usuarios si es necesario
