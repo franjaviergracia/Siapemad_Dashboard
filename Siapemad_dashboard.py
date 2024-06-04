@@ -368,6 +368,12 @@ def mostrar_actividad(df_actividad):
 
 def main():
     # Lógica para ocultar los campos de texto y el botón después de iniciar sesión
+    # Verificar la obtención de los secretos
+    if user1 and pass1:
+        st.success("Secretos obtenidos correctamente.")
+    else:
+        st.error("No se pudieron obtener los secretos.")
+        
     if st.session_state.login_complete:
         encabezado()
         df_consumo = cargar_datos("consumo", excel_files_consumo)
