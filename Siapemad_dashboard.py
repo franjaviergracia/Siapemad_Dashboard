@@ -10,8 +10,8 @@ from actividad import Actividad
 if "login_complete" not in st.session_state:
     st.session_state.login_complete = False
 
-user1 = st.secrets["secrets"]["user1"]
-pass1 = st.secrets["secrets"]["pass1"]
+user1 = st.secrets["secrets"]["USER1"]
+pass1 = st.secrets["secrets"]["PASS1"]
 usuarios = {
     user1: pass1
     # Agrega más usuarios si es necesario
