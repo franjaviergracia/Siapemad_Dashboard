@@ -17,6 +17,9 @@ load_dotenv()
 # Acceder a las variables de entorno
 user1 = os.getenv("USER1")
 pass1 = os.getenv("PASS1")
+# Usar la variable secreta en tu lógica
+print(f"My user is: {user1}")
+print(f"My password is: {pass1}")
 
 usuarios = {
     user1: pass1
