@@ -9,7 +9,6 @@ if LOCAL:
 else:
     base_url = "https://raw.githubusercontent.com/franjaviergracia/Siapemad_Dashboard/main/"
 
-
 excel_files_consumo = {
     "Consumo 1": base_url + "consumos/dataset_consumo_YH-00049797.xlsx",
     "Consumo 2": base_url + "consumos/dataset_consumo_YH-00052712.xlsx",

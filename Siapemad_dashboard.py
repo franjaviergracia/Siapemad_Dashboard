@@ -244,11 +244,16 @@ def mostrar_consumos(datos_filtrados):
 
     df_interpolado = datos_filtrados.interpolate(inplace=False)
 
+    # Filtra las columnas para excluir "ConsumoTotal"
+    columns_to_plot = [col for col in df_interpolado.columns if col not in ['fecha', 'ConsumoTotal']]
+
     datos_filtrados['fecha'] = pd.to_datetime(datos_filtrados['fecha'])
+    
+    # Crear el gráfico con Plotly Express
     fig_evolucion_consumo = px.line(
         df_interpolado,
         x='fecha',
-        y=df_interpolado.columns[2:8],
+        y=columns_to_plot,
         title='Gráfico de Líneas - Datos de Sensores',
         labels={'value': 'Potencia de Sensores [W]', 'variable': 'Sensores'},
         template='plotly_dark'
