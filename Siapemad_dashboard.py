@@ -244,7 +244,7 @@ def mostrar_consumos(datos_filtrados):
 
     df_interpolado = datos_filtrados.interpolate(inplace=False)
 
-    # Filtra las columnas para excluir "Unnamed: 0" y "ConsumoTotal"
+    # Filtra las columnas para excluir "Unnamed: 0", fecha y "ConsumoTotal"
     columns_to_plot = [col for col in df_interpolado.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
 
     datos_filtrados['fecha'] = pd.to_datetime(datos_filtrados['fecha'])
