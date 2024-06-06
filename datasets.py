@@ -1,13 +1,19 @@
+import streamlit as st
 # Lista de nombres de los archivos Excel disponibles
 
 # Determinar si estamos en entorno local o de deployment
-LOCAL = False  # Cambia a False cuando despliegues en GitHub
+LOCAL = True  # Cambia a False cuando despliegues en GitHub
 
 # Definir la ruta base dependiendo del entorno
 if LOCAL:
-    base_url = "C:/Users/CTM40/Desktop/SIAPEMAD/Siapemad_Dashboard/"
+    base_url = "C:/Users/34688/Documents/CARPETAS DE TRABAJO DE JAVI/python_ws/Siapemad_Dashboard/"
+    user1 = "user1"
+    pass1 = "123"
 else:
     base_url = "https://raw.githubusercontent.com/franjaviergracia/Siapemad_Dashboard/main/"
+    user1 = st.secrets["secrets"]["USER1"]
+    pass1 = st.secrets["secrets"]["PASS1"]
+
 
 
 excel_files_consumo = {

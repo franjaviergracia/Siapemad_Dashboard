@@ -2,20 +2,18 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from PIL import Image, ImageOps
-from datasets import excel_files_actividad, excel_files_consumo, image_paths
+from datasets import excel_files_actividad, excel_files_consumo, image_paths, user1, pass1
 from actividad import Actividad
-
+from modelo_anoma import Anomalias
 
 # Store the initial value of widgets in session state
 if "login_complete" not in st.session_state:
     st.session_state.login_complete = False
-
-user1 = st.secrets["secrets"]["USER1"]
-pass1 = st.secrets["secrets"]["PASS1"]
 usuarios = {
     user1: pass1
-    # Agrega más usuarios si es necesario
+# Agrega más usuarios si es necesario
 }
+
 
 # Variables Globales graficos
 FONT_SIZE = 20
@@ -359,6 +357,29 @@ def mostrar_actividad(df_actividad):
     left_colum2, right_column2 = st.columns(2)
     left_colum2.plotly_chart(fig_barras, use_container_width=True)
     right_column2.plotly_chart(fig_pie, use_container_width=True)
+
+
+    cacaanomalias = Anomalias()
+    anomalias = cacaanomalias.getAnomalias()
+    # Crear DataFrame con los datos de las anomalías
+    df_anomalias = pd.DataFrame(anomalias)
+
+    # Calcular la cantidad de anomalías para cada fecha
+    cantidad_anomalias = []
+    for i, row in df_anomalias.iterrows():
+        # Filtrar solo los valores que son numéricos
+        eventos = sum([int(value) for value in row['events'][0].values() if isinstance(value, (int, float, str)) and str(value).isdigit()]) - 1
+        cantidad_anomalias.append(eventos)
+
+    df_anomalias['cantidad_anomalias'] = cantidad_anomalias
+
+    # Crear el gráfico de dispersión con Plotly Express
+    fig = px.scatter(df_anomalias, x='date', y='cantidad_anomalias', title='Anomalías Temporales')
+
+    # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig)
+
+
 
 
 def main():
