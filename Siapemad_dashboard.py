@@ -121,13 +121,13 @@ def cargar_datos(tipo_dataset, files):
     ruta_modelo = None  # Inicializamos ruta_modelo
 
     if st.session_state.first_time and tipo_dataset == "actividad":
+        st.session_state.first_time=False
         df = cargar_datos_excel(file_path)
         ruta_modelo = modelos[selected_key]
         st.session_state.data_actividad = df
         return st.session_state.data_actividad, ruta_modelo
 
     elif st.session_state.first_time and tipo_dataset == "consumo": 
-        st.session_state.first_time=False
         df = cargar_datos_excel(file_path)
 
         st.session_state.data_consumo = df
