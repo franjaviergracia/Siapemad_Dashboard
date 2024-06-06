@@ -11,7 +11,7 @@ if "login_complete" not in st.session_state:
     st.session_state.login_complete = True
 
 if "first_time" not in st.session_state:
-    st.session_state.first_time = False
+    st.session_state.first_time = True
 
 usuarios = {
     user1: pass1
@@ -120,8 +120,8 @@ def cargar_datos(tipo_dataset, files):
     st.session_state.selected_dataset = selected_key
     ruta_modelo = None  # Inicializamos ruta_modelo
 
-    if not "first_time" in st.session.state:
-        st.session_state.first_time=True
+    if "first_time" in st.session.state:
+        st.session_state.first_time=False
         df = cargar_datos_excel(file_path)
 
         if tipo_dataset == "actividad":
