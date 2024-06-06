@@ -234,7 +234,7 @@ class Anomalias:
     
     def getAnomalias(self):
         # Método para obtener la lista de anomalías detectadas
-        vivienda = "YH-00052927"
+        vivienda = "YH-00052916"
         self.secuencias = None
         self.preprocessFileData(f'./data/entrada/{vivienda}-CRUDO.xlsx',f'./data/entrada/{vivienda}-CRUDO_with_date.csv')
         self.resumeDataByIntervalsAndEventIds(f".\data\entrada\{vivienda}-CRUDO_with_date.csv", f"./data/salida/{vivienda}-CRUDO_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.

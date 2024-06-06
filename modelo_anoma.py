@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Input, Dense, Lambda
 import tensorflow.keras.backend as K
 from sklearn.pipeline import Pipeline
 from datetime import datetime, timedelta
+import re
 class Anomalias:
 
     def __init__(self) -> None:
@@ -180,12 +181,23 @@ class Anomalias:
         df_eventos_preprocesados_total_pp = self.preprocess_events(df_eventos_preprocesados_total_df)
         return df_eventos_preprocesados_total_pp
     
-    def getAnomalias(self):
+    def getAnomalias(self, ruta_modelo):
         # Método para obtener la lista de anomalías detectadas
+        print(f"ruta_modelo: {ruta_modelo}")
         self.secuencias = None
+
+        # Busca ID de la vivienda a partir de la ruta del modelo
+        patron = r'YH-\d{8}'
+        vivienda = re.search(patron, ruta_modelo)
+        if vivienda:
+            vivienda = vivienda.group(0)
+            print(vivienda)
+        else:
+            print("No se encontró el patrón")
+        
         # Uso de la función
-        self.resumeDataByIntervalsAndEventIds(".\data\entrada\YH-00049797-CRUDO_with_date.csv", "./data/salida/dato_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
-        self.secuencias = self.loadData('./data/salida/YH-00049797-CRUDO_salida.csv')
+        self.resumeDataByIntervalsAndEventIds(f"./data/entrada/{vivienda}-CRUDO_with_date.csv", f"./data/salida/{vivienda}-CRUDO_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
+        self.secuencias = self.loadData(f'./data/salida/{vivienda}-CRUDO_salida.csv')
         print("Longitud de las secuencias:", len(self.secuencias))
         sec_eventos = []
         for sec in self.secuencias:
@@ -194,14 +206,12 @@ class Anomalias:
 
         df_eventos_preprocesados_total_pp = self.preprocessData(sec_eventos)
 
-
-
         datos_reshape, day_events_len, caracteristics_len = self.prepareDataForLSTMInput(df_eventos_preprocesados_total_pp)
         print("Número de días: ", datos_reshape.shape[0])
         print("Número de eventos por día: ", day_events_len)
         print("Número de características por evento: ", caracteristics_len)
 
-        model = joblib.load("model_YH-00049797-CRUDO.pkl")
+        model = joblib.load(f'modelos/model_{vivienda}-CRUDO.pkl')
 
         # Reconstruir secuencias de entrenamiento
         secuencias_reconstruidas7 = model.predict(datos_reshape)

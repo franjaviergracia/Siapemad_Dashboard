@@ -6,7 +6,7 @@ LOCAL = True  # Cambia a False cuando despliegues en GitHub
 
 # Definir la ruta base dependiendo del entorno
 if LOCAL:
-    base_url = "C:/Users/CTM40/Desktop/SIAPEMAD/Siapemad_Dashboard"
+    base_url = "C:/Users/CTM40/Desktop/SIAPEMAD/Siapemad_Dashboard/"
     user1 = "user1"
     pass1 = "123"
 else:
@@ -38,6 +38,15 @@ excel_files_actividad = {
     "Actividad 4": base_url +"actividades/YH-00052916.xlsx",
     "Actividad 5": base_url +"actividades/YH-00052927.xlsx",
     "Actividad 6": base_url +"actividades/YH-00052931.xlsx",
+}
+
+modelos = {
+    "Actividad 1": base_url +"modelos/YH-00049797.xlsx",
+    "Actividad 2": base_url +"modelos/YH-00052886.xlsx",
+    "Actividad 3": base_url +"modelos/YH-00052887.xlsx",
+    "Actividad 4": base_url +"modelos/YH-00052916.xlsx",
+    "Actividad 5": base_url +"modelos/YH-00052927.xlsx",
+    "Actividad 6": base_url +"modelos/YH-00052931.xlsx",
 }
 
 # Lista de rutas de las imágenes

@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from PIL import Image, ImageOps
-from datasets import excel_files_actividad, excel_files_consumo, image_paths, user1, pass1
+from datasets import excel_files_actividad, excel_files_consumo, modelos, image_paths, user1, pass1
 from actividad import Actividad
 from modelo_anoma import Anomalias
 
@@ -108,11 +108,12 @@ def cargar_datos_excel(file_path, sheet_name='Sheet1'):
         st.error(f"Error al cargar los datos desde {file_path}\n{e}")
         return None
 
-def cargar_datos(tipo_dataset, excel_files):
+def cargar_datos(tipo_dataset, files):
     """Carga los datos seleccionados y los almacena en el estado de la sesión."""
-    selected_key = st.sidebar.selectbox(f"Seleccione el dataset de {tipo_dataset}", list(excel_files.keys()))
-    file_path = excel_files[selected_key]
+    selected_key = st.sidebar.selectbox(f"Seleccione el dataset de {tipo_dataset}", list(files.keys()))
+    file_path = files[selected_key]
     st.session_state.selected_dataset = selected_key
+    ruta_modelo = None  # Inicializamos ruta_modelo
 
     if tipo_dataset == "consumo" and st.session_state.data_consumo is None:
         df = cargar_datos_excel(file_path)
@@ -121,6 +122,7 @@ def cargar_datos(tipo_dataset, excel_files):
     if tipo_dataset == "actividad" and st.session_state.data_actividad is None:
         df = cargar_datos_excel(file_path)
         st.session_state.data_actividad = df
+        ruta_modelo = modelos[selected_key]
 
     if st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
         df = cargar_datos_excel(file_path)
@@ -129,7 +131,10 @@ def cargar_datos(tipo_dataset, excel_files):
         elif tipo_dataset == "consumo":
             st.session_state.data_consumo = df
 
-    return st.session_state.data_actividad if tipo_dataset == "actividad" else st.session_state.data_consumo
+    if tipo_dataset == "actividad":
+        return st.session_state.data_actividad, ruta_modelo
+    else:
+        return st.session_state.data_consumo, None
 
 def filtrar_datos_consumo(df):
     """Filtra los datos de consumo según el rango de fechas y horas seleccionado."""
@@ -308,7 +313,7 @@ def mostrar_consumos(datos_filtrados):
     st.plotly_chart(fig_bigotes, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-def mostrar_actividad(df_actividad):
+def mostrar_actividad(df_actividad, ruta_modelo):
     """Muestra el índice de actividad de los residentes."""
     st.markdown("---")
     st.markdown("##")
@@ -363,9 +368,8 @@ def mostrar_actividad(df_actividad):
     left_colum2.plotly_chart(fig_barras, use_container_width=True)
     right_column2.plotly_chart(fig_pie, use_container_width=True)
 
-
-    cacaanomalias = Anomalias()
-    anomalias = cacaanomalias.getAnomalias()
+    anoma = Anomalias()
+    anomalias = anoma.getAnomalias(ruta_modelo)
     # Crear DataFrame con los datos de las anomalías
     df_anomalias = pd.DataFrame(anomalias)
 
@@ -391,8 +395,8 @@ def main():
     # Lógica para ocultar los campos de texto y el botón después de iniciar sesión
     if st.session_state.login_complete:
         encabezado()
-        df_consumo = cargar_datos("consumo", excel_files_consumo)
-        df_actividad = cargar_datos("actividad", excel_files_actividad)
+        df_consumo, ruta_modelo_consumo = cargar_datos("consumo", excel_files_consumo)
+        df_actividad, ruta_modelo = cargar_datos("actividad", excel_files_actividad)
 
         if df_consumo is not None:
             columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin = filtrar_datos_consumo(df_consumo)
@@ -400,7 +404,9 @@ def main():
             mostrar_consumos(datos_filtrados)
 
         if df_actividad is not None:
-            mostrar_actividad(df_actividad)
+            mostrar_actividad(df_actividad, ruta_modelo)
+
+        
     else:
         login()
 
