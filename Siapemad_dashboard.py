@@ -139,7 +139,8 @@ def cargar_datos(tipo_dataset, files):
         if tipo_dataset == "actividad":
             ruta_modelo = modelos[selected_key]
             st.session_state.data_actividad = df
-            return st.session_state.data_actividad, ruta_modelo
+            st.session_state.ruta = ruta_modelo
+            return st.session_state.data_actividad, st.session_state.ruta
         elif tipo_dataset == "consumo":
             st.session_state.data_consumo = df
             return st.session_state.data_consumo, None
