@@ -13,6 +13,7 @@ if "login_complete" not in st.session_state:
 if "first_time" not in st.session_state:
     st.session_state.first_time = True
 
+st.session_state.ruta = None
 usuarios = {
     user1: pass1
 # Agrega más usuarios si es necesario
@@ -115,23 +116,22 @@ def cargar_datos_excel(file_path, sheet_name='Sheet1'):
 def cargar_datos(tipo_dataset, files):
     """Carga los datos seleccionados y los almacena en el estado de la sesión."""
     selected_key = st.sidebar.selectbox(f"Seleccione el dataset de {tipo_dataset}", list(files.keys()))
-    
     file_path = files[selected_key]
     st.session_state.selected_dataset = selected_key
-    ruta_modelo = None  # Inicializamos ruta_modelo
-
+    
     if st.session_state.first_time and tipo_dataset == "actividad":
         st.session_state.first_time=False
         df = cargar_datos_excel(file_path)
         ruta_modelo = modelos[selected_key]
         st.session_state.data_actividad = df
-        return st.session_state.data_actividad, ruta_modelo
+        st.session_state.ruta = ruta_modelo
+        return st.session_state.data_actividad,  st.session_state.ruta
 
     elif st.session_state.first_time and tipo_dataset == "consumo": 
         df = cargar_datos_excel(file_path)
 
         st.session_state.data_consumo = df
-        return st.session_state.data_consumo, None
+        return st.session_state.data_consumo,  None
 
     elif st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
         df = cargar_datos_excel(file_path)
@@ -143,6 +143,8 @@ def cargar_datos(tipo_dataset, files):
         elif tipo_dataset == "consumo":
             st.session_state.data_consumo = df
             return st.session_state.data_consumo, None
+        
+        
         
 
 
