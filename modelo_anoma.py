@@ -188,7 +188,7 @@ class Anomalias:
 
         
         # Uso de la función
-        self.resumeDataByIntervalsAndEventIds(f"./data/entrada/{ruta_modelo}-CRUDO_with_date.csv", f"./data/salida/{ruta_modelo}-CRUDO_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
+        self.resumeDataByIntervalsAndEventIds(f"https://raw.githubusercontent.com/franjaviergracia/Siapemad_Dashboard/main/data/entrada/{ruta_modelo}-CRUDO_with_date.csv", f"./data/salida/{ruta_modelo}-CRUDO_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
         self.secuencias = self.loadData(f'./data/salida/{ruta_modelo}-CRUDO_salida.csv')
         print("Longitud de las secuencias:", len(self.secuencias))
         sec_eventos = []
