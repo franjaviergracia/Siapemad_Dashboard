@@ -5,3 +5,4 @@ pillow
 openpyxl
 python-dotenv
 joblib
+scikit-learn
