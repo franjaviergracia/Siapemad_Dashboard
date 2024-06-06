@@ -13,6 +13,7 @@ if "login_complete" not in st.session_state:
 if "first_time" not in st.session_state:
     st.session_state.first_time = True
     st.session_state.ruta = None
+
 usuarios = {
     user1: pass1
 # Agrega más usuarios si es necesario
@@ -265,6 +266,11 @@ def mostrar_consumos(datos_filtrados):
 
     # Filtra las columnas para excluir "Unnamed: 0", fecha y "ConsumoTotal"
     columns_to_plot = [col for col in df_interpolado.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
+    indices_to_plot = [df_interpolado.columns.get_loc(col) for col in columns_to_plot]
+    print("columnas: ", columns_to_plot)
+    print("indices_to_plot: ", indices_to_plot)
+    print("df_columns: ", df_interpolado.columns[2:8])
+    
 
     datos_filtrados['fecha'] = pd.to_datetime(datos_filtrados['fecha'])
     

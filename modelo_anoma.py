@@ -212,7 +212,6 @@ class Anomalias:
 
         model = joblib.load(f'modelos/model_{vivienda}-CRUDO.pkl')
 
-        print(datos_reshape)
         # Reconstruir secuencias de entrenamiento
         secuencias_reconstruidas7 = model.predict(datos_reshape)
 
