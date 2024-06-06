@@ -120,6 +120,18 @@ def cargar_datos(tipo_dataset, files):
     st.session_state.selected_dataset = selected_key
     ruta_modelo = None  # Inicializamos ruta_modelo
 
+    if not "first_time" in st.session.state:
+        st.session_state.first_time=True
+        df = cargar_datos_excel(file_path)
+
+        if tipo_dataset == "actividad":
+            ruta_modelo = modelos[selected_key]
+            st.session_state.data_actividad = df
+            return st.session_state.data_actividad, ruta_modelo
+        elif tipo_dataset == "consumo":
+            st.session_state.data_consumo = df
+            return st.session_state.data_consumo, None 
+
     if st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
         df = cargar_datos_excel(file_path)
 
@@ -392,12 +404,6 @@ def main():
     # Lógica para ocultar los campos de texto y el botón después de iniciar sesión
 
     if st.session_state.login_complete:
-
-        """if not st.session_state.first_time:
-            excel_files_consumo="data/entrada/YH-00049797-CRUDO.xlsx"
-            excel_files_actividad=
-            st.session_state.fist_time=True
-        """
         encabezado()
         df_consumo, ruta_modelo_consumo = cargar_datos("consumo", excel_files_consumo)
         df_actividad, ruta_modelo = cargar_datos("actividad", excel_files_actividad)
