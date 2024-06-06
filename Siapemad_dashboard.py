@@ -411,6 +411,8 @@ def main():
         df_consumo, ruta_modelo_consumo = cargar_datos("consumo", excel_files_consumo)
         df_actividad, ruta_modelo = cargar_datos("actividad", excel_files_actividad)
 
+        print(ruta_modelo)
+
         if df_consumo is not None:
             columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin = filtrar_datos_consumo(df_consumo)
             top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin)
