@@ -112,30 +112,22 @@ def cargar_datos_excel(file_path, sheet_name='Sheet1'):
 def cargar_datos(tipo_dataset, files):
     """Carga los datos seleccionados y los almacena en el estado de la sesión."""
     selected_key = st.sidebar.selectbox(f"Seleccione el dataset de {tipo_dataset}", list(files.keys()))
+    
     file_path = files[selected_key]
     st.session_state.selected_dataset = selected_key
-    ruta_modelo = None  # Inicializamos ruta_modelo
-
-    if tipo_dataset == "consumo" and st.session_state.data_consumo is None:
-        df = cargar_datos_excel(file_path)
-        st.session_state.data_consumo = df
-
-    if tipo_dataset == "actividad" and st.session_state.data_actividad is None:
-        df = cargar_datos_excel(file_path)
-        st.session_state.data_actividad = df
-        ruta_modelo = modelos[selected_key]
+    ruta_modelo = modelos[selected_key]  # Inicializamos ruta_modelo
 
     if st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
         df = cargar_datos_excel(file_path)
+        ruta_modelo = modelos[selected_key]
         if tipo_dataset == "actividad":
             st.session_state.data_actividad = df
+            return st.session_state.data_actividad, ruta_modelo
         elif tipo_dataset == "consumo":
             st.session_state.data_consumo = df
+            return st.session_state.data_consumo, None
+        
 
-    if tipo_dataset == "actividad":
-        return st.session_state.data_actividad, ruta_modelo
-    else:
-        return st.session_state.data_consumo, None
 
 def filtrar_datos_consumo(df):
     """Filtra los datos de consumo según el rango de fechas y horas seleccionado."""
