@@ -188,9 +188,9 @@ class Anomalias:
 
         # Busca ID de la vivienda a partir de la ruta del modelo
         patron = r'YH-\d{8}'
-        vivienda = re.search(patron, ruta_modelo)
-        if vivienda:
-            vivienda = vivienda.group(0)
+        vivienda_match = re.search(patron, ruta_modelo)
+        if vivienda_match:
+            vivienda = vivienda_match.group(0)
             print(vivienda)
         else:
             print("No se encontró el patrón")
