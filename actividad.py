@@ -13,7 +13,7 @@ class Actividad():
         actividad=self.__actividad__()
 
         return actividad
-
+#
     #Elimina datos irrelevantes o faltantes
     def __procesar__(self):
         print("Chavo este es el df", self.df)
