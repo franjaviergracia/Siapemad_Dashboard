@@ -77,9 +77,9 @@ class Anomalias:
             conteo_eventos = eventos_en_intervalo['event-id'].value_counts().to_dict()
             conteos_por_intervalo['intervalo'].append(intervalo)
             conteos_por_intervalo['fecha_completa'].append(fecha_inferior)
-            print(conteo_eventos)
+         
             for event_id in unique_event_ids:
-                print(str(event_id)+"----"+str(conteo_eventos.get(event_id, 0)))
+              
                 conteos_por_intervalo[event_id].append(conteo_eventos.get(event_id, 0))
 
         # Crear DataFrame a partir del diccionario
@@ -94,7 +94,6 @@ class Anomalias:
         # Suponiendo que tu matriz se llama 'matriz' y tiene la forma (259200, 1010)
         matriz = df_eventos_preprocesados_total_pp
 
-        print("Longitud total:" ,df_eventos_preprocesados_total_pp.shape[0])
 
         # Número de filas en cada submatriz
         filas_por_submatriz = len(self.secuencias[0]["events"])
@@ -116,7 +115,7 @@ class Anomalias:
         # puedes agregar las filas restantes a una submatriz adicional
         resto = matriz.shape[0] % filas_por_submatriz
         if resto > 0:
-            print("algo pasa, resto > 0")
+          
             submatriz_resto = matriz[-resto:, :]
             lista_matrices.append(submatriz_resto)
 
@@ -191,7 +190,7 @@ class Anomalias:
         vivienda_match = re.search(patron, ruta_modelo)
         if vivienda_match:
             vivienda = vivienda_match.group(0)
-            print(vivienda)
+        
         else:
             print("No se encontró el patrón")
         
@@ -213,6 +212,7 @@ class Anomalias:
 
         model = joblib.load(f'modelos/model_{vivienda}-CRUDO.pkl')
 
+        print(datos_reshape)
         # Reconstruir secuencias de entrenamiento
         secuencias_reconstruidas7 = model.predict(datos_reshape)
 
@@ -231,7 +231,7 @@ class Anomalias:
         # Mostrar secuencias anómalas
         print('Secuencias Anómalas: ', len(secuencias_anomalas7))
         for i, secuencia_anomala in enumerate(secuencias_anomalas7):
-            print(f'Anomalía {i + 1}: {secuencia_anomala}')
+            
             self.anomalias.append(secuencia_anomala)
         return self.anomalias
 
