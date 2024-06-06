@@ -12,8 +12,9 @@ if "login_complete" not in st.session_state:
 
 if "first_time" not in st.session_state:
     st.session_state.first_time = True
+    st.session_state.ruta = None
 
-st.session_state.ruta = None
+
 usuarios = {
     user1: pass1
 # Agrega más usuarios si es necesario
