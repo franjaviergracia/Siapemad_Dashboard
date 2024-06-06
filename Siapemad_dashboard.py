@@ -235,12 +235,7 @@ def top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin):
 
 def mostrar_consumos(datos_filtrados):
     """Muestra gráficos de consumos registrados."""
-
-    # Filtra las columnas para excluir "Unnamed: 0", fecha y "ConsumoTotal"
-    columns_to_plot = [col for col in datos_filtrados.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
-    indices_to_plot = [datos_filtrados.columns.get_loc(col) for col in columns_to_plot]
-
-    df_seleccionado = datos_filtrados.iloc[:, indices_to_plot]
+    df_seleccionado = datos_filtrados.iloc[:, 2:8]
     df_sumas = df_seleccionado.sum()
 
     df_bar = pd.DataFrame({
@@ -268,6 +263,9 @@ def mostrar_consumos(datos_filtrados):
 
     df_interpolado = datos_filtrados.interpolate(inplace=False)
 
+    # Filtra las columnas para excluir "Unnamed: 0", fecha y "ConsumoTotal"
+    columns_to_plot = [col for col in df_interpolado.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
+
     datos_filtrados['fecha'] = pd.to_datetime(datos_filtrados['fecha'])
     
     # Crear el gráfico con Plotly Express
@@ -282,7 +280,7 @@ def mostrar_consumos(datos_filtrados):
 
     fig_bigotes = px.box(
         df_interpolado,
-        y=df_interpolado.iloc[:, indices_to_plot].values,
+        y=df_interpolado.columns[2:8],
         title='Diagrama de caja',
         labels={'variable': 'Sensores', 'value': 'Valores'}
     )
