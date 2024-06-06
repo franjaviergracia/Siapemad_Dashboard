@@ -15,7 +15,6 @@ else:
     pass1 = st.secrets["secrets"]["PASS1"]
 
 
-
 excel_files_consumo = {
     "Consumo 1": base_url + "consumos/dataset_consumo_YH-00049797.xlsx",
     "Consumo 2": base_url + "consumos/dataset_consumo_YH-00052712.xlsx",
