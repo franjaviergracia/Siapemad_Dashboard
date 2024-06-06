@@ -240,9 +240,7 @@ def mostrar_consumos(datos_filtrados):
     # Filtra las columnas para excluir "Unnamed: 0", fecha y "ConsumoTotal"
     columns_to_plot = [col for col in datos_filtrados.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
     indices_to_plot = [datos_filtrados.columns.get_loc(col) for col in columns_to_plot]
-    print("columnas: ", columns_to_plot)
-    print("indices_to_plot: ", indices_to_plot)
-    print("df_columns: ", datos_filtrados.columns[2:8])
+
 
     df_seleccionado = datos_filtrados.iloc[:, indices_to_plot]
     df_sumas = df_seleccionado.sum()
@@ -286,7 +284,7 @@ def mostrar_consumos(datos_filtrados):
 
     fig_bigotes = px.box(
         df_interpolado,
-        y=df_interpolado.columns[indices_to_plot[0]:indices_to_plot[-1] + 1],
+        y=df_interpolado.columns[indices_to_plot[:]],
         title='Diagrama de caja',
         labels={'variable': 'Sensores', 'value': 'Valores'}
     )
