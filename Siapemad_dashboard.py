@@ -118,6 +118,18 @@ def cargar_datos(tipo_dataset, files):
     selected_key = st.sidebar.selectbox(f"Seleccione el dataset de {tipo_dataset}", list(files.keys()))
     file_path = files[selected_key]
     st.session_state.selected_dataset = selected_key
+
+    if st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
+        df = cargar_datos_excel(file_path)
+
+        if tipo_dataset == "actividad":
+            ruta_modelo = modelos[selected_key]
+            st.session_state.data_actividad = df
+            st.session_state.ruta = ruta_modelo
+            return st.session_state.data_actividad, st.session_state.ruta
+        elif tipo_dataset == "consumo":
+            st.session_state.data_consumo = df
+            return st.session_state.data_consumo, None
     
     if tipo_dataset == "actividad":
         if st.session_state.first_time:
@@ -135,17 +147,7 @@ def cargar_datos(tipo_dataset, files):
             st.session_state.data_consumo = df
         return st.session_state.data_consumo,  None
 
-    if st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
-        df = cargar_datos_excel(file_path)
 
-        if tipo_dataset == "actividad":
-            ruta_modelo = modelos[selected_key]
-            st.session_state.data_actividad = df
-            st.session_state.ruta = ruta_modelo
-            return st.session_state.data_actividad, st.session_state.ruta
-        elif tipo_dataset == "consumo":
-            st.session_state.data_consumo = df
-            return st.session_state.data_consumo, None
         
         
         
