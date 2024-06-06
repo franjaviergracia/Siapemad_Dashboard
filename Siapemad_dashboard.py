@@ -8,7 +8,8 @@ from modelo_anoma import Anomalias
 
 # Store the initial value of widgets in session state
 if "login_complete" not in st.session_state:
-    st.session_state.login_complete = False
+    st.session_state.login_complete = True
+
 usuarios = {
     user1: pass1
 # Agrega más usuarios si es necesario
