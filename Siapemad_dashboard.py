@@ -282,7 +282,7 @@ def mostrar_consumos(datos_filtrados):
 
     fig_bigotes = px.box(
         df_interpolado,
-        y=df_interpolado,
+        y=df_interpolado.columns[:],
         title='Diagrama de caja',
         labels={'variable': 'Sensores', 'value': 'Valores'}
     )
