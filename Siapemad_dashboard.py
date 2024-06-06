@@ -269,7 +269,6 @@ def mostrar_consumos(datos_filtrados):
     columns_to_plot = [col for col in df_interpolado.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
 
     datos_filtrados['fecha'] = pd.to_datetime(datos_filtrados['fecha'])
-    df_interpolado = df_interpolado[columns_to_plot]
     # Crear el gráfico con Plotly Express
     fig_evolucion_consumo = px.line(
         df_interpolado,
@@ -282,7 +281,7 @@ def mostrar_consumos(datos_filtrados):
 
     fig_bigotes = px.box(
         df_interpolado,
-        y=df_interpolado.columns[:],
+        y=df_interpolado.columns[2:8],
         title='Diagrama de caja',
         labels={'variable': 'Sensores', 'value': 'Valores'}
     )
