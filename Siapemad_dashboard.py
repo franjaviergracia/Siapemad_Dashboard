@@ -236,7 +236,15 @@ def top_kpis(columnas_de_interes, datos_filtrados, fecha_inicio, fecha_fin):
 
 def mostrar_consumos(datos_filtrados):
     """Muestra gráficos de consumos registrados."""
-    df_seleccionado = datos_filtrados.iloc[:, 2:8]
+
+    # Filtra las columnas para excluir "Unnamed: 0", fecha y "ConsumoTotal"
+    columns_to_plot = [col for col in datos_filtrados.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
+    indices_to_plot = [datos_filtrados.columns.get_loc(col) for col in columns_to_plot]
+    print("columnas: ", columns_to_plot)
+    print("indices_to_plot: ", indices_to_plot)
+    print("df_columns: ", datos_filtrados.columns[2:8])
+
+    df_seleccionado = datos_filtrados.iloc[:, indices_to_plot]
     df_sumas = df_seleccionado.sum()
 
     df_bar = pd.DataFrame({
@@ -263,14 +271,6 @@ def mostrar_consumos(datos_filtrados):
     )
 
     df_interpolado = datos_filtrados.interpolate(inplace=False)
-
-    # Filtra las columnas para excluir "Unnamed: 0", fecha y "ConsumoTotal"
-    columns_to_plot = [col for col in df_interpolado.columns if col not in ['Unnamed: 0', 'fecha', 'ConsumoTotal']]
-    indices_to_plot = [df_interpolado.columns.get_loc(col) for col in columns_to_plot]
-    print("columnas: ", columns_to_plot)
-    print("indices_to_plot: ", indices_to_plot)
-    print("df_columns: ", df_interpolado.columns[2:8])
-    
 
     datos_filtrados['fecha'] = pd.to_datetime(datos_filtrados['fecha'])
     
@@ -334,6 +334,7 @@ def mostrar_consumos(datos_filtrados):
     st.markdown('<div class="flex-container">', unsafe_allow_html=True)
     st.plotly_chart(fig_bigotes, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 def mostrar_actividad(df_actividad, ruta_modelo):
     """Muestra el índice de actividad de los residentes."""
