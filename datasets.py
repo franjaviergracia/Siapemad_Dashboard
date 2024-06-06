@@ -41,12 +41,12 @@ excel_files_actividad = {
 }
 
 modelos = {
-    "Actividad 1": base_url +"modelos/YH-00049797.xlsx",
-    "Actividad 2": base_url +"modelos/YH-00052886.xlsx",
-    "Actividad 3": base_url +"modelos/YH-00052887.xlsx",
-    "Actividad 4": base_url +"modelos/YH-00052916.xlsx",
-    "Actividad 5": base_url +"modelos/YH-00052927.xlsx",
-    "Actividad 6": base_url +"modelos/YH-00052931.xlsx",
+    "Actividad 1": "YH-00049797",
+    "Actividad 2": "YH-00052886",
+    "Actividad 3": "YH-00052887",
+    "Actividad 4": "YH-00052916",
+    "Actividad 5": "YH-00052927",
+    "Actividad 6": "YH-00052931",
 }
 
 # Lista de rutas de las imágenes
