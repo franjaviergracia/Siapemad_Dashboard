@@ -186,10 +186,18 @@ class Anomalias:
         print(f"ruta_modelo: {ruta_modelo}")
         self.secuencias = None
 
+        # Busca ID de la vivienda a partir de la ruta del modelo
+        patron = r'YH-\d{8}'
+        vivienda_match = re.search(patron, ruta_modelo)
+        if vivienda_match:
+            vivienda = vivienda_match.group(0)
+            print(vivienda)
+        else:
+            print("No se encontró el patrón")
         
         # Uso de la función
-        self.resumeDataByIntervalsAndEventIds(f"https://raw.githubusercontent.com/franjaviergracia/Siapemad_Dashboard/main/data/entrada/{ruta_modelo}-CRUDO_with_date.csv", f"./data/salida/{ruta_modelo}-CRUDO_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
-        self.secuencias = self.loadData(f'./data/salida/{ruta_modelo}-CRUDO_salida.csv')
+        self.resumeDataByIntervalsAndEventIds(f"./data/entrada/{vivienda}-CRUDO_with_date.csv", f"./data/salida/{vivienda}-CRUDO_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
+        self.secuencias = self.loadData(f'./data/salida/{vivienda}-CRUDO_salida.csv')
         print("Longitud de las secuencias:", len(self.secuencias))
         sec_eventos = []
         for sec in self.secuencias:
@@ -203,7 +211,7 @@ class Anomalias:
         print("Número de eventos por día: ", day_events_len)
         print("Número de características por evento: ", caracteristics_len)
 
-        model = joblib.load(f'./modelos/model_{ruta_modelo}-CRUDO.pkl')
+        model = joblib.load(f'modelos/model_{vivienda}-CRUDO.pkl')
 
         # Reconstruir secuencias de entrenamiento
         secuencias_reconstruidas7 = model.predict(datos_reshape)
