@@ -118,12 +118,13 @@ def cargar_datos(tipo_dataset, files):
     
     file_path = files[selected_key]
     st.session_state.selected_dataset = selected_key
-    ruta_modelo = modelos[selected_key]  # Inicializamos ruta_modelo
+    ruta_modelo = None  # Inicializamos ruta_modelo
 
     if st.sidebar.button(f"Cargar y ejecutar {tipo_dataset}"):
         df = cargar_datos_excel(file_path)
-        ruta_modelo = modelos[selected_key]
+
         if tipo_dataset == "actividad":
+            ruta_modelo = modelos[selected_key]
             st.session_state.data_actividad = df
             return st.session_state.data_actividad, ruta_modelo
         elif tipo_dataset == "consumo":
