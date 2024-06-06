@@ -3,15 +3,68 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense, Lambda
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.layers import Input, Dense, Lambda, LSTM, Masking
 import tensorflow.keras.backend as K
+from keras.models import Sequential
+from keras.layers import LSTM, Dense, Masking, Dropout
+from keras.regularizers import l2
 from sklearn.pipeline import Pipeline
 from datetime import datetime, timedelta
 class Anomalias:
 
     def __init__(self) -> None:
         pass
+
+    def preprocessFileData(self, filePath, outputPath):
+        # Leer el archivo CSV
+        df = pd.read_excel(filePath, header=0)
+        
+
+        # Convertir la columna 'event-time' a formato datetime
+        df['event-datetime'] = pd.to_datetime(df['event-time'], format='%H:%M:%S', errors='coerce')
+
+        # Eliminar filas con valores de fecha nulos (valores vacíos)
+        df = df.dropna(subset=['event-datetime', "event-id"])
+
+        # Inicializar la variable para almacenar la fecha del día anterior
+        fecha_anterior = None
+
+        # Lista para almacenar las secuencias por día
+        secuencias = []
+        
+        days = 0
+        # Recorrer los datos para agruparlos por día
+        for _, row in df.iterrows():
+            if fecha_anterior is None or row['event-datetime'].time() > fecha_anterior.time():
+                # Crear una nueva secuencia para el nuevo día
+                nueva_secuencia = {
+                    'fecha': row['event-datetime'].date() - timedelta(days=days),
+                    'eventos': [row.to_dict()]  # Convertir la fila a un diccionario y añadirlo a los datos del día
+                }
+                days += 1
+                secuencias.append(nueva_secuencia)
+            else:
+                # Agregar la fila al día actual en la secuencia
+                secuencias[-1]['eventos'].append(row.to_dict())
+
+            fecha_anterior = row['event-datetime']
+
+
+        # Añadi la columna 'full-date' a cada evento en las secuencias
+        for secuencia in secuencias:
+            for evento in secuencia['eventos']:
+                fecha = secuencia['fecha'].strftime('%Y-%m-%d')  # Convertir la fecha a formato de cadena YYYY-MM-DD
+                tiempo = evento['event-time']  # Obtener el valor de tiempo de la columna 'event-time'
+                evento['full-date'] = f"{fecha} {tiempo}"
+
+        # Convertir la lista de secuencias de nuevo a un DataFrame
+        df_with_full_date = pd.concat([pd.DataFrame(secuencia['eventos']) for secuencia in secuencias], ignore_index=True)
+        # Eliminar la columna 'event-datetime' del DataFrame
+        df_with_full_date.drop(columns=['event-datetime'], inplace=True)
+
+        # Guardar el DataFrame modificado en un nuevo archivo CSV
+        df_with_full_date.to_csv(outputPath, index=False)
 
     def loadData(self, filePath):
         # Cargar el archivo CSV
@@ -181,26 +234,38 @@ class Anomalias:
     
     def getAnomalias(self):
         # Método para obtener la lista de anomalías detectadas
+        vivienda = "YH-00052927"
         self.secuencias = None
-        # Uso de la función
-        self.resumeDataByIntervalsAndEventIds(".\data\entrada\YH-00049797-CRUDO_with_date.csv", "./data/salida/dato_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
-        self.secuencias = self.loadData('./data/salida/YH-00049797-CRUDO_salida.csv')
+        self.preprocessFileData(f'./data/entrada/{vivienda}-CRUDO.xlsx',f'./data/entrada/{vivienda}-CRUDO_with_date.csv')
+        self.resumeDataByIntervalsAndEventIds(f".\data\entrada\{vivienda}-CRUDO_with_date.csv", f"./data/salida/{vivienda}-CRUDO_salida.csv", 60*60*24)  # Ejemplo: Intervalos de 24h.
+        self.secuencias = self.loadData(f'./data/salida/{vivienda}-CRUDO_salida.csv')
         print("Longitud de las secuencias:", len(self.secuencias))
         sec_eventos = []
         for sec in self.secuencias:
             sec_eventos.append(sec["events"])
 
-
         df_eventos_preprocesados_total_pp = self.preprocessData(sec_eventos)
-
-
 
         datos_reshape, day_events_len, caracteristics_len = self.prepareDataForLSTMInput(df_eventos_preprocesados_total_pp)
         print("Número de días: ", datos_reshape.shape[0])
         print("Número de eventos por día: ", day_events_len)
         print("Número de características por evento: ", caracteristics_len)
 
-        model = joblib.load("model_YH-00049797-CRUDO.pkl")
+        # Definir la arquitectura del modelo
+        model = Sequential()
+        model.add(Masking(mask_value=0.0))   
+        model.add(LSTM(256, return_sequences=True, kernel_regularizer=l2(0.01)))
+        model.add(Dropout(0.2))
+        model.add(LSTM(128, return_sequences=True, kernel_regularizer=l2(0.01)))
+        model.add(Dropout(0.2))
+        model.add(Dense(caracteristics_len, kernel_regularizer=l2(0.01)))
+
+        model.compile(loss='mse', optimizer='adam')
+
+        # Entrenar el modelo para la reconstrucción de secuencias
+        model.fit(datos_reshape, datos_reshape, epochs=3000, verbose=1)
+        import joblib
+        joblib.dump(model, f"model_{vivienda}-CRUDO.pkl")
 
         # Reconstruir secuencias de entrenamiento
         secuencias_reconstruidas7 = model.predict(datos_reshape)
@@ -226,4 +291,6 @@ class Anomalias:
 
 
    
-
+if __name__ == "__main__":
+    anoma = Anomalias()
+    anomalias = anoma.getAnomalias()

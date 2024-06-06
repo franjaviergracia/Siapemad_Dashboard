@@ -6,7 +6,7 @@ LOCAL = True  # Cambia a False cuando despliegues en GitHub
 
 # Definir la ruta base dependiendo del entorno
 if LOCAL:
-    base_url = "C:/Users/34688/Documents/CARPETAS DE TRABAJO DE JAVI/python_ws/Siapemad_Dashboard/"
+    base_url = "C:/Users/CTM40/Desktop/SIAPEMAD/Siapemad_Dashboard"
     user1 = "user1"
     pass1 = "123"
 else:
