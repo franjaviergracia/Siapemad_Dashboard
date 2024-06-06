@@ -120,7 +120,7 @@ def cargar_datos(tipo_dataset, files):
     st.session_state.selected_dataset = selected_key
     ruta_modelo = None  # Inicializamos ruta_modelo
 
-    if "first_time" in st.session.state:
+    if st.session_state.first_time:
         st.session_state.first_time=False
         df = cargar_datos_excel(file_path)
 
