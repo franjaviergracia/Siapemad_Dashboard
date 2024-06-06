@@ -10,6 +10,9 @@ from modelo_anoma import Anomalias
 if "login_complete" not in st.session_state:
     st.session_state.login_complete = True
 
+if "first_time" not in st.session_state:
+    st.session_state.first_time = False
+
 usuarios = {
     user1: pass1
 # Agrega más usuarios si es necesario
@@ -386,7 +389,14 @@ def mostrar_actividad(df_actividad, ruta_modelo):
 
 def main():
     # Lógica para ocultar los campos de texto y el botón después de iniciar sesión
+
     if st.session_state.login_complete:
+
+        """if not st.session_state.first_time:
+            excel_files_consumo="data/entrada/YH-00049797-CRUDO.xlsx"
+            excel_files_actividad=
+            st.session_state.fist_time=True
+        """
         encabezado()
         df_consumo, ruta_modelo_consumo = cargar_datos("consumo", excel_files_consumo)
         df_actividad, ruta_modelo = cargar_datos("actividad", excel_files_actividad)
