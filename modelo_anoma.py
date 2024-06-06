@@ -203,7 +203,7 @@ class Anomalias:
         print("Número de eventos por día: ", day_events_len)
         print("Número de características por evento: ", caracteristics_len)
 
-        model = joblib.load('https://raw.githubusercontent.com/franjaviergracia/Siapemad_Dashboard/main/modelos/model_YH-00049797-CRUDO.pkl')
+        model = joblib.load(f'https://raw.githubusercontent.com/franjaviergracia/Siapemad_Dashboard/main/modelos/model_{ruta_modelo}-CRUDO.pkl')
 
         # Reconstruir secuencias de entrenamiento
         secuencias_reconstruidas7 = model.predict(datos_reshape)
